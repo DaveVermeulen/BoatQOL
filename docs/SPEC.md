@@ -81,10 +81,13 @@ Then the boat moves by its motion with normal block collision.
 (normal blocks 0.6, ice 0.98). That high ice value is what makes modern boats
 fly across ice.
 
-**Ice config option** (`fastIce`, default `false`):
+**Ice config option** "Use modern ice slide" (`useModernIceSlide`, default `false`):
 
-- `true`: ice uses its real slipperiness (0.98), as in 1.9+.
-- `false`: ice counts as a normal block (0.6), so ice is no faster than land.
+- `false` (default): boats on ice behave as they did in that game version's
+  vanilla boat. The old boats (b1.7.3, BTA, 1.7.10) get no extra speed from ice,
+  so ice counts as a normal block (0.6) in `boatGlide`. Each port checks this
+  against its own version's vanilla boat.
+- `true`: ice uses its real slipperiness (0.98), giving the 1.9+ fast ice slide.
 
 The boat must move on land (slowly), not just in water. That matches 1.9+.
 
