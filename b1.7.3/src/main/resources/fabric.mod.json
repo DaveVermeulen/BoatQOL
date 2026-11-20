@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "id": "boatqol",
+  "version": "${version}",
+  "name": "BoatQOL",
+  "description": "Modern (1.9+) boat controls and behavior for Beta 1.7.3: A/D to turn, W/S to move, boats that never break.",
+  "authors": [
+    "DaveVermeulen"
+  ],
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "io.github.davevermeulen.boatqol.BoatQOL"
+    ],
+    "client": [
+      "io.github.davevermeulen.boatqol.client.BoatQOLClient"
+    ],
+    "server": [
+      "io.github.davevermeulen.boatqol.server.BoatQOLServer"
+    ]
+  },
+  "mixins": [
+    "boatqol.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.16.0",
+    "minecraft": "1.0.0-beta.7.3"
+  }
+}
