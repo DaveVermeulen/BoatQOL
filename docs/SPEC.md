@@ -120,7 +120,25 @@ Modern boats are client-authoritative, and this is the model to copy:
 Each port decides how to register the custom packet (a mixin into the packet ID
 table on Babric and BTA, Forge's `SimpleNetworkWrapper` on 1.7.10).
 
-## 5. Out of scope
+## 5. Port notes
+
+### b1.7.3 (done)
+
+- The Beta boat points along `(cos yaw, sin yaw)`, 90° off from players. The port keeps that
+  convention (so the old renderer and seat still line up) and rotates the 1.12 formulas to match.
+  The rider's facing is boat yaw − 90°.
+- Beta 1.7.3 has no creative mode, so "breaks in one hit in creative" doesn't apply.
+- Getting out works as in vanilla Beta (use the boat again).
+- Handshake: the client puts a marker in the login packet's world seed field (unused from
+  client to server). The server records who has the mod and sends those clients packet 212
+  with its settings. The client steers locally only after it gets packet 212; the server
+  only expects packet 211 (vehicle move) from marked clients. If the rider's client sends no
+  move for 60 ticks, the server simulates the boat itself.
+- A rider without the mod gets the vanilla Beta boat logic, but still with no crash breakage
+  and a boat item drop.
+- Packet ids: 211 (vehicle move, client to server), 212 (server config, server to client).
+
+## 6. Out of scope
 
 - Paddle animations and sounds.
 - Two passengers (needs entity multi-passenger support the old versions don't have).

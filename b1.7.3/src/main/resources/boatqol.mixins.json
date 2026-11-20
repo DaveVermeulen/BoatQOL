@@ -1,0 +1,22 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "io.github.davevermeulen.boatqol.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "BoatEntityMixin",
+    "EntityMixin",
+    "PacketMixin"
+  ],
+  "client": [
+    "client.BoatEntityClientMixin",
+    "client.LoginHelloPacketMixin"
+  ],
+  "server": [
+    "server.ServerLoginNetworkHandlerMixin",
+    "server.ServerPlayNetworkHandlerAccessor"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
