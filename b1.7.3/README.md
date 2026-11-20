@@ -13,6 +13,7 @@ In multiplayer, install it on the server and on every client.
 ## What changes
 
 - **Getting out:** sneak (shift) to get out, like 1.9+. You can't get in while sneaking.
+- **Placing:** a placed boat faces the way you're looking.
 - **Steering:** W/S move forward and back, A/D turn the boat. Looking around no longer steers.
   You turn with the boat and can look at most 105° away from where it points.
 - **Physics:** the 1.12 boat: floats on the surface, about 8 m/s on water, slow (about 2 m/s) on land.
