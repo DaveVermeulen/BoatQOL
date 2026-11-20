@@ -1,5 +1,6 @@
 package io.github.davevermeulen.boatqol.mixin;
 
+import io.github.davevermeulen.boatqol.BoatRiding;
 import io.github.davevermeulen.boatqol.BoatState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.vehicle.BoatEntity;
@@ -29,23 +30,6 @@ public abstract class EntityMixin {
         this.yaw = (float) (this.yaw + this.vehicleYawDelta);
         this.vehicleYawDelta = 0.0;
 
-        // A rider facing the old boat's bow has yaw = boat yaw + 90.
-        float facing = this.vehicle.yaw + 90.0F;
-        float rel = wrap(this.yaw - facing);
-        float clamped = Math.max(-105.0F, Math.min(105.0F, rel));
-        this.prevYaw += clamped - rel;
-        this.yaw += clamped - rel;
-    }
-
-    @org.spongepowered.asm.mixin.Unique
-    private static float wrap(float degrees) {
-        degrees %= 360.0F;
-        if (degrees >= 180.0F) {
-            degrees -= 360.0F;
-        }
-        if (degrees < -180.0F) {
-            degrees += 360.0F;
-        }
-        return degrees;
+        BoatRiding.clampLook((Entity) (Object) this);
     }
 }

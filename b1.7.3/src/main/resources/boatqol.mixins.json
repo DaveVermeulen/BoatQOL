@@ -10,7 +10,8 @@
   ],
   "client": [
     "client.BoatEntityClientMixin",
-    "client.LoginHelloPacketMixin"
+    "client.LoginHelloPacketMixin",
+    "client.EntityClientMixin"
   ],
   "server": [
     "server.ServerLoginNetworkHandlerMixin",
