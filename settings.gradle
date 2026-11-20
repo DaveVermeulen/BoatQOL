@@ -7,4 +7,8 @@ pluginManagement {
     }
 }
 
-rootProject.name = 'boatqol-b1.7.3'
+rootProject.name = 'BoatQOL'
+
+// Open this folder in IntelliJ and each port shows up as a module, with its
+// own "Minecraft Client" / "Minecraft Server" run configurations.
+include 'b1.7.3'

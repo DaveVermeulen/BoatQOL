@@ -72,6 +72,11 @@ public abstract class BoatEntityMixin extends Entity implements BoatState {
 
     @Inject(method = "tick", at = @At("HEAD"), cancellable = true)
     private void boatqol$tick(CallbackInfo ci) {
+        if (!this.world.isRemote && this.passenger instanceof PlayerEntity && this.passenger.isSneaking()) {
+            // Sneak to get out, like 1.9+. Done by the server (or singleplayer
+            // world) so every client sees it, with or without the mod.
+            this.passenger.setVehicle(this);
+        }
         Entity rider = this.passenger;
         float[] input = rider == null ? null : BoatQOL.localInput.get(rider);
 
@@ -479,6 +484,14 @@ public abstract class BoatEntityMixin extends Entity implements BoatState {
         return this.passenger != null
                 && BoatQOL.localInput.get(this.passenger) != null
                 && (!this.world.isRemote || RemoteServer.hasMod());
+    }
+
+    /** Sneaking players can't get in (they would fall straight out again). */
+    @Inject(method = "interact", at = @At("HEAD"), cancellable = true)
+    private void boatqol$noSneakBoarding(PlayerEntity player, CallbackInfoReturnable<Boolean> cir) {
+        if (player.isSneaking() && player.vehicle != this) {
+            cir.setReturnValue(true);
+        }
     }
 
     // ---------------------------------------------------------------- durability

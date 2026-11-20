@@ -128,7 +128,9 @@ table on Babric and BTA, Forge's `SimpleNetworkWrapper` on 1.7.10).
   convention (so the old renderer and seat still line up) and rotates the 1.12 formulas to match.
   The rider's facing is boat yaw − 90°.
 - Beta 1.7.3 has no creative mode, so "breaks in one hit in creative" doesn't apply.
-- Getting out works as in vanilla Beta (use the boat again).
+- Sneaking makes the rider get out; the server (or singleplayer world) does it, so it works
+  for riders without the mod too. A sneaking player can't board. Using the boat again also
+  still gets you out, as in vanilla Beta.
 - Handshake: the client puts a marker in the login packet's world seed field (unused from
   client to server). The server records who has the mod and sends those clients packet 212
   with its settings. The client steers locally only after it gets packet 212; the server

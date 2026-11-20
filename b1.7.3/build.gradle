@@ -14,6 +14,15 @@ java {
     targetCompatibility = JavaVersion.VERSION_1_8
 }
 
+loom {
+    runs {
+        configureEach {
+            // Also generate IntelliJ run configurations when this is a module of the root project.
+            ideConfigGenerated(true)
+        }
+    }
+}
+
 repositories {
     maven { name = 'Babric'; url = 'https://maven.glass-launcher.net/babric' }
     maven { name = 'Glass Releases'; url = 'https://maven.glass-launcher.net/releases' }

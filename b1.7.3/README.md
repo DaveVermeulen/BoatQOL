@@ -12,6 +12,7 @@ In multiplayer, install it on the server and on every client.
 
 ## What changes
 
+- **Getting out:** sneak (shift) to get out, like 1.9+. You can't get in while sneaking.
 - **Steering:** W/S move forward and back, A/D turn the boat. Looking around no longer steers.
   You turn with the boat and can look at most 105° away from where it points.
 - **Physics:** the 1.12 boat: floats on the surface, about 8 m/s on water, slow (about 2 m/s) on land.
@@ -34,8 +35,10 @@ In multiplayer, install it on the server and on every client.
 
 ## Building
 
+See [Developing](../README.md#developing) in the main README. From the repository root:
+
 ```
-./gradlew build
+./gradlew :b1.7.3:build
 ```
 
-The jar ends up in `build/libs/`. Needs Java 21 for Gradle; the mod itself targets Java 8.
+The jar ends up in `b1.7.3/build/libs/`.
