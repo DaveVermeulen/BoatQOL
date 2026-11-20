@@ -124,9 +124,13 @@ table on Babric and BTA, Forge's `SimpleNetworkWrapper` on 1.7.10).
 
 ### b1.7.3 (done)
 
-- The Beta boat points along `(cos yaw, sin yaw)`, 90° off from players. The port keeps that
-  convention (so the old renderer and seat still line up) and rotates the 1.12 formulas to match.
-  The rider's facing is boat yaw − 90°.
+- The Beta boat's bow points along `-(cos yaw, sin yaw)` (vanilla turns it to face away from
+  its motion, and seats the rider 0.4 blocks toward the stern). The port keeps that convention so
+  the old renderer and seat line up, and rotates the 1.12 formulas to match. A rider facing the
+  bow has yaw = boat yaw + 90°.
+- Float height matches the vanilla Beta boat (bottom of the hitbox at the water surface), not
+  the 1.12 draft: the water checks use a hull 0.385 blocks below the Beta hitbox, which with the
+  1.12 buoyancy puts the hitbox bottom where the Beta boat floats.
 - Beta 1.7.3 has no creative mode, so "breaks in one hit in creative" doesn't apply.
 - Sneaking makes the rider get out; the server (or singleplayer world) does it, so it works
   for riders without the mod too. A sneaking player can't board. Using the boat again also

@@ -29,10 +29,16 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 /**
  * The 1.9-1.12 boat (see docs/SPEC.md), ported onto the Beta 1.7.3 boat.
  *
- * Yaw convention: the old boat points along (cos yaw, sin yaw), which is 90
- * degrees off from players and from the 1.9+ boat. The old convention is kept so
- * the old renderer and rider seat still line up, and the 1.12 formulas are
- * rotated to match.
+ * Yaw convention: the old boat's bow points along -(cos yaw, sin yaw) (the old
+ * code turned the boat to face away from its motion, and seats the rider 0.4
+ * blocks toward +(cos yaw, sin yaw), at the stern). That convention is kept so the
+ * old renderer and seat line up, and the 1.12 formulas are rotated to match:
+ * a rider facing the bow has yaw = boat yaw + 90.
+ *
+ * Float height: the 1.12 buoyancy sinks the 1.12 hull about 0.39 blocks, but the
+ * Beta boat (model and hitbox) sits with its bottom at the water surface. All
+ * water checks therefore use a "hull" {@link #HULL_DEPTH} below the hitbox, so
+ * the boat floats at the same height as the vanilla Beta boat.
  */
 @Mixin(BoatEntity.class)
 public abstract class BoatEntityMixin extends Entity implements BoatState {
@@ -46,6 +52,9 @@ public abstract class BoatEntityMixin extends Entity implements BoatState {
     @Unique private static final int CLIENT_MOVE_TIMEOUT = 60;
     /** Server: largest move per packet accepted from a client, squared (10 blocks). */
     @Unique private static final double MAX_CLIENT_MOVE_SQ = 100.0;
+
+    /** How far the 1.12 hull reaches below the Beta hitbox (see class comment). */
+    @Unique private static final double HULL_DEPTH = 0.385;
 
     @Unique private float boatqol$deltaRotation;
     @Unique private int boatqol$status = STATUS_IN_AIR;
@@ -195,10 +204,10 @@ public abstract class BoatEntityMixin extends Entity implements BoatState {
         if (back) {
             f -= 0.005F;
         }
-        // Forward is (cos yaw, sin yaw) in the old boat's convention.
+        // The bow is -(cos yaw, sin yaw) in the old boat's convention.
         double rad = this.yaw * Math.PI / 180.0;
-        this.velocityX += Math.cos(rad) * f;
-        this.velocityZ += Math.sin(rad) * f;
+        this.velocityX -= Math.cos(rad) * f;
+        this.velocityZ -= Math.sin(rad) * f;
     }
 
     /** EntityBoat.updateMotion */
@@ -211,8 +220,8 @@ public abstract class BoatEntityMixin extends Entity implements BoatState {
 
         if (this.boatqol$prevStatus == STATUS_IN_AIR && status != STATUS_IN_AIR && status != STATUS_ON_LAND) {
             // Landed in water from the air: snap onto the surface.
-            this.boatqol$waterLevel = this.boundingBox.minY + this.height;
-            double minY = this.boatqol$waterLevelAbove() - this.height + 0.101;
+            this.boatqol$waterLevel = this.boundingBox.minY - HULL_DEPTH + this.height;
+            double minY = this.boatqol$waterLevelAbove() - this.height + 0.101 + HULL_DEPTH;
             this.setPosition(this.x, minY + this.standingEyeHeight - this.cameraOffset, this.z);
             this.velocityY = 0.0;
             this.boatqol$lastYd = 0.0;
@@ -221,7 +230,7 @@ public abstract class BoatEntityMixin extends Entity implements BoatState {
         }
 
         if (status == STATUS_IN_WATER) {
-            buoyancy = (this.boatqol$waterLevel - this.boundingBox.minY) / this.height;
+            buoyancy = (this.boatqol$waterLevel - (this.boundingBox.minY - HULL_DEPTH)) / this.height;
             momentum = 0.9F;
         } else if (status == STATUS_UNDER_FLOWING_WATER) {
             gravity = -7.0E-4;
@@ -279,10 +288,11 @@ public abstract class BoatEntityMixin extends Entity implements BoatState {
     @Unique
     private boolean boatqol$checkInWater() {
         Box bb = this.boundingBox;
+        double hullMinY = bb.minY - HULL_DEPTH;
         int x0 = MathHelper.floor(bb.minX);
         int x1 = (int) Math.ceil(bb.maxX);
-        int y0 = MathHelper.floor(bb.minY);
-        int y1 = (int) Math.ceil(bb.minY + 0.001);
+        int y0 = MathHelper.floor(hullMinY);
+        int y1 = (int) Math.ceil(hullMinY + 0.001);
         int z0 = MathHelper.floor(bb.minZ);
         int z1 = (int) Math.ceil(bb.maxZ);
         boolean inWater = false;
@@ -293,7 +303,7 @@ public abstract class BoatEntityMixin extends Entity implements BoatState {
                     if (this.world.getMaterial(x, y, z) == Material.WATER) {
                         float level = y + this.boatqol$liquidHeight(x, y, z);
                         this.boatqol$waterLevel = Math.max(level, this.boatqol$waterLevel);
-                        inWater |= bb.minY < level;
+                        inWater |= hullMinY < level;
                     }
                 }
             }
@@ -335,8 +345,9 @@ public abstract class BoatEntityMixin extends Entity implements BoatState {
         Box bb = this.boundingBox;
         int x0 = MathHelper.floor(bb.minX);
         int x1 = (int) Math.ceil(bb.maxX);
-        int y0 = MathHelper.floor(bb.maxY);
-        int y1 = (int) Math.ceil(bb.maxY - this.boatqol$lastYd);
+        double hullMaxY = bb.maxY - HULL_DEPTH;
+        int y0 = MathHelper.floor(hullMaxY);
+        int y1 = (int) Math.ceil(hullMaxY - this.boatqol$lastYd);
         int z0 = MathHelper.floor(bb.minZ);
         int z1 = (int) Math.ceil(bb.maxZ);
         layers:

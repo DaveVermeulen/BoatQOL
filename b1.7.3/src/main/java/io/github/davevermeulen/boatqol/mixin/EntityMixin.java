@@ -29,8 +29,8 @@ public abstract class EntityMixin {
         this.yaw = (float) (this.yaw + this.vehicleYawDelta);
         this.vehicleYawDelta = 0.0;
 
-        // The old boat's heading is 90 degrees off from a player's.
-        float facing = this.vehicle.yaw - 90.0F;
+        // A rider facing the old boat's bow has yaw = boat yaw + 90.
+        float facing = this.vehicle.yaw + 90.0F;
         float rel = wrap(this.yaw - facing);
         float clamped = Math.max(-105.0F, Math.min(105.0F, rel));
         this.prevYaw += clamped - rel;
