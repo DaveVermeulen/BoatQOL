@@ -6,7 +6,8 @@
   "mixins": [
     "BoatEntityMixin",
     "EntityMixin",
-    "PacketMixin"
+    "PacketMixin",
+    "BoatItemMixin"
   ],
   "client": [
     "client.BoatEntityClientMixin",
@@ -15,7 +16,8 @@
   ],
   "server": [
     "server.ServerLoginNetworkHandlerMixin",
-    "server.ServerPlayNetworkHandlerAccessor"
+    "server.ServerPlayNetworkHandlerAccessor",
+    "server.EntityTrackerEntryMixin"
   ],
   "injectors": {
     "defaultRequire": 1

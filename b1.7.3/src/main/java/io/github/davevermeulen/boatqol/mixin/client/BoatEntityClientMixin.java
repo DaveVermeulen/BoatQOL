@@ -22,6 +22,11 @@ public abstract class BoatEntityClientMixin extends Entity {
 
     @Inject(method = "setPositionAndAnglesAvoidEntities", at = @At("HEAD"), cancellable = true)
     private void boatqol$ignoreServerPosition(double x, double y, double z, float yaw, float pitch, int steps, CallbackInfo ci) {
+        if (this.age == 0) {
+            // Rotation sent right after the spawn packet: face that way at once
+            // instead of visibly turning from yaw 0.
+            this.prevYaw = this.yaw = yaw;
+        }
         if (((BoatState) this).boatqol$isLocallyControlled()) {
             double dx = x - this.x;
             double dy = y - this.y;
