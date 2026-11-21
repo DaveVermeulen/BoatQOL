@@ -1,0 +1,8 @@
+name = "BoatQOL"
+filename = "boatqol-forge-1.7.10-1.0.0.jar"
+side = "both"
+
+[download]
+url = "https://github.com/DaveVermeulen/BoatQOL/releases/download/1.0.0-forge-1.7.10/boatqol-forge-1.7.10-1.0.0.jar"
+hash-format = "sha256"
+hash = "f28a3cb13e9fcf301655ac8282f90799c13d9a34bfc956c437eb9a6827cf3525"

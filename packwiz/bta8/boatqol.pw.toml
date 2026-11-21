@@ -1,0 +1,8 @@
+name = "BoatQOL"
+filename = "boatqol-bta-1.0.0.jar"
+side = "both"
+
+[download]
+url = "https://github.com/DaveVermeulen/BoatQOL/releases/download/1.0.0-bta8/boatqol-bta-1.0.0.jar"
+hash-format = "sha256"
+hash = "c650bcc1165e9eb72981309ed59a4f4e79970799603d41339c095890c996dd42"
