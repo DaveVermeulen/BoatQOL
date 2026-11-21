@@ -101,9 +101,9 @@ public class ModernBoat extends EntityBoat {
             } else {
                 if (this.locallyControlled) {
                     // We just got out: hand the boat back to the server's updates.
+                    // It keeps its speed, and keeps gliding here until they arrive.
                     this.locallyControlled = false;
                     this.lerpSteps = 0;
-                    this.motionX = this.motionY = this.motionZ = 0.0;
                 }
                 this.remoteTick();
             }
@@ -144,6 +144,13 @@ public class ModernBoat extends EntityBoat {
 
     /** Client, a boat steered by someone else (or nobody): follow the server. */
     private void remoteTick() {
+        if (this.lerpSteps <= 0 && this.riddenByEntity == null) {
+            // No update from the server to move toward: simulate the boat here. The
+            // server only sends moves of 1/8 block or more, so without this a boat
+            // settling into the water (a smaller move) would stay too high here.
+            this.modernTick(null);
+            return;
+        }
         this.onEntityUpdate();
         this.tickWobble();
         if (this.lerpSteps > 0) {
@@ -213,6 +220,22 @@ public class ModernBoat extends EntityBoat {
                     this.worldObj.func_147480_a(x, y, z, true);
                 }
             }
+        }
+    }
+
+    /**
+     * 1.12's EntityBoat.applyEntityCollision: other boats push it unless they are
+     * on top of it, other entities only when they aren't standing on it. A player
+     * getting out lands on top of the boat, so they no longer knock it off course.
+     */
+    @Override
+    public void applyEntityCollision(Entity other) {
+        if (other instanceof EntityBoat) {
+            if (other.boundingBox.minY < this.boundingBox.maxY) {
+                super.applyEntityCollision(other);
+            }
+        } else if (other.boundingBox.minY <= this.boundingBox.minY) {
+            super.applyEntityCollision(other);
         }
     }
 
