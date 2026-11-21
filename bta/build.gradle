@@ -17,6 +17,12 @@ loom {
             // Also generate IntelliJ run configurations when this is a module of the root project.
             ideConfigGenerated(true)
         }
+        client {
+            // BTA 8 uses LWJGL 3, whose GLFW must run on the first thread on macOS.
+            if (org.gradle.internal.os.OperatingSystem.current().isMacOsX()) {
+                vmArg "-XstartOnFirstThread"
+            }
+        }
     }
 }
 
