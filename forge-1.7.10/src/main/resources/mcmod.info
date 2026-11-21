@@ -1,0 +1,11 @@
+[
+  {
+    "modid": "boatqol",
+    "name": "BoatQOL",
+    "description": "Modern (1.9 to 1.12) boats: A/D turns, W/S drives, boats never break in crashes or falls, and placed boats face where you look.",
+    "version": "${version}",
+    "mcversion": "1.7.10",
+    "authorList": ["Dave Vermeulen"],
+    "url": "https://github.com/DaveVermeulen/BoatQOL"
+  }
+]

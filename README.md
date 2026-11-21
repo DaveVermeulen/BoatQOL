@@ -6,7 +6,7 @@ Targets, in build order:
 
 1. Beta 1.7.3 (Babric) in `b1.7.3/`
 2. Better than Adventure 8 (Babric) in `bta/`
-3. 1.7.10 (Forge) in `1.7.10/`
+3. 1.7.10 (Forge) in `forge-1.7.10/`
 
 See [docs/SPEC.md](docs/SPEC.md) for the exact behavior every port follows.
 
@@ -20,8 +20,14 @@ In IntelliJ IDEA:
 1. **File > Open** the repository root (the folder with `settings.gradle`) and trust the Gradle project.
 2. If it asks, set **Settings > Build, Execution, Deployment > Build Tools > Gradle > Gradle JVM** to a JDK 21.
 3. After the Gradle sync finishes, the run configurations list has **Minecraft Client (:b1.7.3)**,
-   **Minecraft Server (:b1.7.3)**, **Minecraft Client (:bta)** and **Minecraft Server (:bta)**. If they don't show up, run the `ideaSyncTask` Gradle task once
+   **Minecraft Server (:b1.7.3)**, **Minecraft Client (:bta)**, **Minecraft Server (:bta)**,
+   **Minecraft Client (:forge-1.7.10)** and **Minecraft Server (:forge-1.7.10)**. If the Babric ones
+   don't show up, run the `ideaSyncTask` Gradle task once
    (Gradle tool window > BoatQOL > b1.7.3 > ide > ideaSyncTask).
 
-From a terminal: `./gradlew :b1.7.3:runClient` (or `:bta:runClient`), `./gradlew :b1.7.3:runServer`, or `./gradlew build`
+The 1.7.10 Forge port runs Minecraft on Java 8 (and decompiles it with Java 17). Gradle downloads
+both automatically the first time. Its dev server asks you to accept the Minecraft EULA in
+`forge-1.7.10/run/eula.txt` before it starts.
+
+From a terminal: `./gradlew :b1.7.3:runClient` (or `:bta:runClient`, `:forge-1.7.10:runClient`), `./gradlew :b1.7.3:runServer`, or `./gradlew build`
 (jars end up in `<port>/build/libs/`).

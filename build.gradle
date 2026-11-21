@@ -1,0 +1,14 @@
+plugins {
+    id 'org.jetbrains.gradle.plugin.idea-ext' version '1.4.1'
+}
+
+// IntelliJ run configurations for the 1.7.10 Forge port. (The Fabric/Babric ports get
+// theirs from Loom.) They run the Gradle tasks, which set up the Forge dev environment.
+idea.project.settings.runConfigurations {
+    'Minecraft Client (:forge-1.7.10)'(org.jetbrains.gradle.ext.Gradle) {
+        taskNames = [':forge-1.7.10:runClient']
+    }
+    'Minecraft Server (:forge-1.7.10)'(org.jetbrains.gradle.ext.Gradle) {
+        taskNames = [':forge-1.7.10:runServer']
+    }
+}
