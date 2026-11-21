@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Publishes one GitHub release per port: the mod jar plus a packwiz .pw.toml that points at it.
+# The .pw.toml files are also written to packwiz/<port>/ for the workflow to commit.
 # Run by .github/workflows/release.yml after `./gradlew build`.
 set -euo pipefail
 
@@ -22,7 +23,9 @@ release() {
     fi
 
     hash="$(sha256sum "$jar" | cut -d' ' -f1)"
-    pw="build/release/$label/boatqol.pw.toml"
+    # Also kept in the repository at a fixed path per port (committed by the workflow), so
+    # there is always one obvious file for each game version: packwiz/<port>/boatqol.pw.toml.
+    pw="packwiz/$label/boatqol.pw.toml"
     mkdir -p "$(dirname "$pw")"
     cat > "$pw" <<TOML
 name = "BoatQOL"
@@ -39,7 +42,7 @@ TOML
         --title "BoatQOL $version for $game" \
         --notes "Modern (1.9+) boats for $game. Install on the server and every client.
 
-**packwiz:** \`packwiz url add BoatQOL $url\`, or put [boatqol.pw.toml](https://github.com/$repo/releases/download/$tag/boatqol.pw.toml) in your pack's \`mods\` folder and run \`packwiz refresh\`.
+**packwiz** (run in your pack folder): \`packwiz url add BoatQOL $url\`
 
 See the [README](https://github.com/$repo#installing) for details."
 }

@@ -21,14 +21,17 @@ Each port has its own release on the [Releases page](../../releases): `…-b1.7.
 
 ### packwiz
 
-Every release also has a `boatqol.pw.toml`. Either add the mod by URL:
+Pick the line for your game version and run it in your pack folder. Each one always points at the
+newest BoatQOL release for that version, so you don't have to look up a file name:
 
-```
-packwiz url add BoatQOL https://github.com/DaveVermeulen/BoatQOL/releases/download/<tag>/<jar>
-```
+| Game | Command |
+| --- | --- |
+| Beta 1.7.3 (Babric) | `curl -fLo mods/boatqol.pw.toml https://raw.githubusercontent.com/DaveVermeulen/BoatQOL/main/packwiz/b1.7.3/boatqol.pw.toml && packwiz refresh` |
+| Better than Adventure 8 | `curl -fLo mods/boatqol.pw.toml https://raw.githubusercontent.com/DaveVermeulen/BoatQOL/main/packwiz/bta8/boatqol.pw.toml && packwiz refresh` |
+| 1.7.10 (Forge) | `curl -fLo mods/boatqol.pw.toml https://raw.githubusercontent.com/DaveVermeulen/BoatQOL/main/packwiz/forge-1.7.10/boatqol.pw.toml && packwiz refresh` |
 
-or download that release's `boatqol.pw.toml` into your pack's `mods/` folder and run `packwiz refresh`.
-Both pin that exact version; to update, repeat with the newer release.
+Run the same line again to update. (Each release's notes also have a `packwiz url add` command for
+that exact version.)
 
 ## Releasing
 
