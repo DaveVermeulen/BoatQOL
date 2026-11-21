@@ -42,6 +42,11 @@ repositories {
         patternLayout { artifact "v1/[organisation]/[revision]/[module].jar"; m2compatible = true }
         metadataSources { artifact() }
     }
+    // Mojang's library server has LWJGL 3.3.3 too, but not all of its native jars.
+    exclusiveContent {
+        forRepository { mavenCentral() }
+        filter { includeGroup "org.lwjgl" }
+    }
     mavenCentral()
 }
 
@@ -63,9 +68,28 @@ dependencies {
     modRuntimeOnly "objects:client:43db9b498cb67058d2e12d394e6507722e71bb45"
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
+    // BTA 8 bundles the LWJGL 3 classes but not its native libraries (its launcher supplies them),
+    // and its version manifest still lists the LWJGL 2 natives. Provide the matching LWJGL 3 natives
+    // for the dev client so runClient works on every OS.
+    ["lwjgl", "lwjgl-glfw", "lwjgl-openal", "lwjgl-opengl", "lwjgl-stb", "lwjgl-assimp"].each { module ->
+        ["linux", "linux-arm64", "macos", "macos-arm64", "windows", "windows-arm64"].each { platform ->
+            runtimeOnly "org.lwjgl:${module}:${project.lwjgl_version}:natives-${platform}"
+        }
+    }
+
     implementation "org.slf4j:slf4j-api:1.8.0-beta4"
     implementation "org.apache.logging.log4j:log4j-slf4j18-impl:2.17.2"
 }
+
+// Loom extracts the LWJGL 2 natives from the manifest into java.library.path. LWJGL 3 would load
+// those instead of its own and crash ("Incompatible Java and native library versions"), so remove them.
+def removeLwjgl2Natives = tasks.register("removeLwjgl2Natives", Delete) {
+    delete fileTree(rootProject.file(".gradle/loom-cache/natives/${project.bta_version}")) {
+        include "*lwjgl*", "*openal*", "*OpenAL*"
+    }
+}
+tasks.matching { it.name == "extractNatives" }.configureEach { finalizedBy removeLwjgl2Natives }
+tasks.matching { it.name in ["configureClientLaunch", "runClient"] }.configureEach { dependsOn removeLwjgl2Natives }
 
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
