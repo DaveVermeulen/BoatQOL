@@ -10,6 +10,32 @@ Targets, in build order:
 
 See [docs/SPEC.md](docs/SPEC.md) for the exact behavior every port follows.
 
+## Installing
+
+Each port has its own release on the [Releases page](../../releases): `…-b1.7.3`, `…-bta8` and
+`…-forge-1.7.10`. Install the jar on the server and on every client.
+
+- **Beta 1.7.3:** Babric (Fabric Loader for Beta). Put `boatqol-b1.7.3-<version>.jar` in `mods/`.
+- **Better than Adventure 8:** BTA's Babric/Fabric Loader. Put `boatqol-bta-<version>.jar` in `mods/`.
+- **1.7.10:** Forge 10.13.4.1614 (no other mods needed). Put `boatqol-forge-1.7.10-<version>.jar` in `mods/`.
+
+### packwiz
+
+Every release also has a `boatqol.pw.toml`. Either add the mod by URL:
+
+```
+packwiz url add BoatQOL https://github.com/DaveVermeulen/BoatQOL/releases/download/<tag>/<jar>
+```
+
+or download that release's `boatqol.pw.toml` into your pack's `mods/` folder and run `packwiz refresh`.
+Both pin that exact version; to update, repeat with the newer release.
+
+## Releasing
+
+Bump `mod_version` in the port's `gradle.properties`, merge to `main`, then run the **Release**
+workflow from the Actions tab. It builds every port and creates a release for each version that
+doesn't have one yet.
+
 ## Developing
 
 The repository root is one Gradle build with each port as a module. Gradle needs **JDK 21**
