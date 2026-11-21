@@ -136,6 +136,7 @@ public class ModernBoat extends EntityBoat {
     private void passiveTick() {
         this.onEntityUpdate();
         this.tickWobble();
+        this.breakSoftBlocks();
         this.fallDistance = 0.0F;
         if (this.riddenByEntity != null && this.riddenByEntity.isDead) {
             this.riddenByEntity = null;
@@ -181,15 +182,12 @@ public class ModernBoat extends EntityBoat {
         if (input != null) {
             this.control(input[0], input[1]);
         }
+        this.breakSoftBlocks();
         this.moveEntity(this.motionX, this.motionY, this.motionZ);
         this.fallDistance = 0.0F; // never takes fall damage, never breaks on landing
         this.setRotation(this.rotationYaw, 0.0F);
 
         this.splash(this.motionX, this.motionY, this.motionZ);
-
-        if (!this.worldObj.isRemote) {
-            this.breakSoftBlocks();
-        }
 
         List<?> nearby = this.worldObj.getEntitiesWithinAABBExcludingEntity(this, this.boundingBox.expand(0.2, 0.0, 0.2));
         if (nearby != null) {
@@ -206,7 +204,12 @@ public class ModernBoat extends EntityBoat {
         }
     }
 
-    /** Like vanilla: driving through snow layers and lily pads breaks them. */
+    /**
+     * Like vanilla: driving through snow layers and lily pads breaks them. Runs
+     * before the move, so they don't stop the boat. The server breaks them for
+     * real (lily pads drop as items); the rider's client, which moves the boat
+     * itself, only clears them locally so it doesn't bump into them first.
+     */
     private void breakSoftBlocks() {
         for (int corner = 0; corner < 4; corner++) {
             int x = MathHelper.floor_double(this.posX + (corner % 2 - 0.5) * 0.8);
@@ -214,7 +217,7 @@ public class ModernBoat extends EntityBoat {
             for (int dy = 0; dy < 2; dy++) {
                 int y = MathHelper.floor_double(this.posY) + dy;
                 Block block = this.worldObj.getBlock(x, y, z);
-                if (block == Blocks.snow_layer) {
+                if (block == Blocks.snow_layer || (block == Blocks.waterlily && this.worldObj.isRemote)) {
                     this.worldObj.setBlockToAir(x, y, z);
                 } else if (block == Blocks.waterlily) {
                     this.worldObj.func_147480_a(x, y, z, true);
