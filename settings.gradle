@@ -2,6 +2,7 @@ pluginManagement {
     repositories {
         maven { name = 'Fabric'; url = 'https://maven.fabricmc.net/' }
         maven { name = 'Babric'; url = 'https://maven.glass-launcher.net/babric' }
+        maven { name = 'Signalum'; url = 'https://maven.thesignalumproject.net/infrastructure' }
         mavenCentral()
         gradlePluginPortal()
     }
@@ -12,3 +13,4 @@ rootProject.name = 'BoatQOL'
 // Open this folder in IntelliJ and each port shows up as a module, with its
 // own "Minecraft Client" / "Minecraft Server" run configurations.
 include 'b1.7.3'
+include 'bta'

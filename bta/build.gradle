@@ -1,0 +1,115 @@
+plugins {
+    id 'fabric-loom' version '1.17.21'
+}
+
+base {
+    archivesName = project.archives_base_name
+}
+version = project.mod_version
+group = project.maven_group
+
+loom {
+    // BTA ships with readable names, so there are no intermediary mappings.
+    noIntermediateMappings()
+    customMinecraftMetadata.set("https://downloads.betterthanadventure.net/bta-client/${project.bta_channel}/v${project.bta_version}/manifest.json")
+    runs {
+        configureEach {
+            // Also generate IntelliJ run configurations when this is a module of the root project.
+            ideConfigGenerated(true)
+        }
+        client {
+            // BTA 8 uses LWJGL 3, whose GLFW must run on the first thread on macOS.
+            if (org.gradle.internal.os.OperatingSystem.current().isMacOsX()) {
+                vmArg "-XstartOnFirstThread"
+            }
+        }
+    }
+}
+
+repositories {
+    maven { name = 'Signalum'; url = 'https://maven.thesignalumproject.net/infrastructure' }
+    maven { name = 'Babric'; url = 'https://maven.glass-launcher.net/babric' }
+    maven { name = 'Fabric'; url = 'https://maven.fabricmc.net/' }
+    ivy {
+        name = 'BTA client'
+        url = "https://downloads.betterthanadventure.net/bta-client/${project.bta_channel}/"
+        patternLayout { artifact "/v[revision]/client.jar"; m2compatible = true }
+        metadataSources { artifact() }
+    }
+    ivy {
+        name = 'BTA server'
+        url = "https://downloads.betterthanadventure.net/bta-server/${project.bta_channel}/"
+        patternLayout { artifact "/v[revision]/server.jar"; m2compatible = true }
+        metadataSources { artifact() }
+    }
+    ivy {
+        name = 'Mojang objects'
+        url = "https://piston-data.mojang.com"
+        patternLayout { artifact "v1/[organisation]/[revision]/[module].jar"; m2compatible = true }
+        metadataSources { artifact() }
+    }
+    // Mojang's library server has LWJGL 3.3.3 too, but not all of its native jars.
+    exclusiveContent {
+        forRepository { mavenCentral() }
+        filter { includeGroup "org.lwjgl" }
+    }
+    mavenCentral()
+}
+
+// Loom wants mappings as a jar; build one around the empty mapping file.
+def noMappingsJar = layout.buildDirectory.file("no-mappings/no-mappings.jar").get().asFile
+if (!noMappingsJar.exists()) {
+    noMappingsJar.parentFile.mkdirs()
+    ant.zip(destfile: noMappingsJar) {
+        zipfileset(file: file("no-mappings.tiny"), fullpath: "mappings/mappings.tiny")
+    }
+}
+
+dependencies {
+    minecraft "::${project.bta_version}"
+    // BTA is not obfuscated: an empty mapping file maps every name to itself.
+    mappings files(noMappingsJar)
+
+    // BTA loads resources from the vanilla Beta 1.7.3 client at runtime.
+    modRuntimeOnly "objects:client:43db9b498cb67058d2e12d394e6507722e71bb45"
+    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+
+    // BTA 8 bundles the LWJGL 3 classes but not its native libraries (its launcher supplies them),
+    // and its version manifest still lists the LWJGL 2 natives. Provide the matching LWJGL 3 natives
+    // for the dev client so runClient works on every OS.
+    ["lwjgl", "lwjgl-glfw", "lwjgl-openal", "lwjgl-opengl", "lwjgl-stb", "lwjgl-assimp"].each { module ->
+        ["linux", "linux-arm64", "macos", "macos-arm64", "windows", "windows-arm64"].each { platform ->
+            runtimeOnly "org.lwjgl:${module}:${project.lwjgl_version}:natives-${platform}"
+        }
+    }
+
+    implementation "org.slf4j:slf4j-api:1.8.0-beta4"
+    implementation "org.apache.logging.log4j:log4j-slf4j18-impl:2.17.2"
+}
+
+// Loom extracts the LWJGL 2 natives from the manifest into java.library.path. LWJGL 3 would load
+// those instead of its own and crash ("Incompatible Java and native library versions"), so remove them.
+def removeLwjgl2Natives = tasks.register("removeLwjgl2Natives", Delete) {
+    delete fileTree(rootProject.file(".gradle/loom-cache/natives/${project.bta_version}")) {
+        include "*lwjgl*", "*openal*", "*OpenAL*"
+    }
+}
+tasks.matching { it.name == "extractNatives" }.configureEach { finalizedBy removeLwjgl2Natives }
+tasks.matching { it.name in ["configureClientLaunch", "runClient"] }.configureEach { dependsOn removeLwjgl2Natives }
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+tasks.withType(JavaCompile).configureEach {
+    it.options.release = 8
+    it.options.encoding = 'UTF-8'
+}
+
+processResources {
+    inputs.property "version", project.version
+    filesMatching("fabric.mod.json") {
+        expand "version": project.version
+    }
+}
