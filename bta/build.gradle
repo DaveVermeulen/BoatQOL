@@ -1,0 +1,85 @@
+plugins {
+    id 'fabric-loom' version '1.17.21'
+}
+
+base {
+    archivesName = project.archives_base_name
+}
+version = project.mod_version
+group = project.maven_group
+
+loom {
+    // BTA ships with readable names, so there are no intermediary mappings.
+    noIntermediateMappings()
+    customMinecraftMetadata.set("https://downloads.betterthanadventure.net/bta-client/${project.bta_channel}/v${project.bta_version}/manifest.json")
+    runs {
+        configureEach {
+            // Also generate IntelliJ run configurations when this is a module of the root project.
+            ideConfigGenerated(true)
+        }
+    }
+}
+
+repositories {
+    maven { name = 'Signalum'; url = 'https://maven.thesignalumproject.net/infrastructure' }
+    maven { name = 'Babric'; url = 'https://maven.glass-launcher.net/babric' }
+    maven { name = 'Fabric'; url = 'https://maven.fabricmc.net/' }
+    ivy {
+        name = 'BTA client'
+        url = "https://downloads.betterthanadventure.net/bta-client/${project.bta_channel}/"
+        patternLayout { artifact "/v[revision]/client.jar"; m2compatible = true }
+        metadataSources { artifact() }
+    }
+    ivy {
+        name = 'BTA server'
+        url = "https://downloads.betterthanadventure.net/bta-server/${project.bta_channel}/"
+        patternLayout { artifact "/v[revision]/server.jar"; m2compatible = true }
+        metadataSources { artifact() }
+    }
+    ivy {
+        name = 'Mojang objects'
+        url = "https://piston-data.mojang.com"
+        patternLayout { artifact "v1/[organisation]/[revision]/[module].jar"; m2compatible = true }
+        metadataSources { artifact() }
+    }
+    mavenCentral()
+}
+
+// Loom wants mappings as a jar; build one around the empty mapping file.
+def noMappingsJar = layout.buildDirectory.file("no-mappings/no-mappings.jar").get().asFile
+if (!noMappingsJar.exists()) {
+    noMappingsJar.parentFile.mkdirs()
+    ant.zip(destfile: noMappingsJar) {
+        zipfileset(file: file("no-mappings.tiny"), fullpath: "mappings/mappings.tiny")
+    }
+}
+
+dependencies {
+    minecraft "::${project.bta_version}"
+    // BTA is not obfuscated: an empty mapping file maps every name to itself.
+    mappings files(noMappingsJar)
+
+    // BTA loads resources from the vanilla Beta 1.7.3 client at runtime.
+    modRuntimeOnly "objects:client:43db9b498cb67058d2e12d394e6507722e71bb45"
+    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+
+    implementation "org.slf4j:slf4j-api:1.8.0-beta4"
+    implementation "org.apache.logging.log4j:log4j-slf4j18-impl:2.17.2"
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+tasks.withType(JavaCompile).configureEach {
+    it.options.release = 8
+    it.options.encoding = 'UTF-8'
+}
+
+processResources {
+    inputs.property "version", project.version
+    filesMatching("fabric.mod.json") {
+        expand "version": project.version
+    }
+}

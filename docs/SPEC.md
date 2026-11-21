@@ -144,6 +144,18 @@ table on Babric and BTA, Forge's `SimpleNetworkWrapper` on 1.7.10).
   and a boat item drop.
 - Packet ids: 211 (vehicle move, client to server), 212 (server config, server to client).
 
+### BTA 8.0.1
+
+- BTA already has A/D steering, sneak to dismount, look-direction placement, no crash or fall
+  breakage, and client-driven boat packets (`PacketBoatControl`). The port replaces the physics and
+  steering with the 1.12 ones and keeps the rest.
+- Same yaw convention and float approach as b1.7.3. BTA water levels are in eighths, so the hull
+  sits 0.40 blocks below the hitbox to match the vanilla BTA float height.
+- Networking uses BTA custom payloads (`BoatQOL:Config`, `BoatQOL:Hello`, `BoatQOL:Move`), not new
+  packet ids. A rider without the mod keeps the vanilla BTA boat and its own control packets.
+- Breaking by a non-player drops the boat item (vanilla BTA drops planks and sticks).
+- BTA isn't obfuscated, so the build maps names to themselves with an empty mapping file.
+
 ## 6. Out of scope
 
 - Paddle animations and sounds.

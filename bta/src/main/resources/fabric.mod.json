@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "id": "boatqol",
+  "version": "${version}",
+  "name": "BoatQOL",
+  "description": "Modern (1.9+) boat physics and controls for Better than Adventure: W/S to move, A/D to turn, boats that never break.",
+  "authors": [
+    "DaveVermeulen"
+  ],
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "io.github.davevermeulen.boatqol.BoatQOL"
+    ],
+    "client": [
+      "io.github.davevermeulen.boatqol.client.BoatQOLClient"
+    ]
+  },
+  "mixins": [
+    "boatqol.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.18.0"
+  }
+}
