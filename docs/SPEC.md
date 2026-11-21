@@ -156,6 +156,24 @@ table on Babric and BTA, Forge's `SimpleNetworkWrapper` on 1.7.10).
 - Breaking by a non-player drops the boat item (vanilla BTA drops planks and sticks).
 - BTA isn't obfuscated, so the build maps names to themselves with an empty mapping file.
 
+### 1.7.10 Forge
+
+- No core mods or mixins. `ModernBoat` extends the vanilla `EntityBoat` and overrides its
+  ticking, so the vanilla model, renderer, hitbox, damage and boat item drop stay as they are.
+- It is registered as a Forge mod entity, but saved and loaded under the vanilla `Boat` id, so
+  existing boats become modern boats and a world keeps its boats if the mod is removed.
+- The boat item and dispensers still create vanilla boats; each one is swapped for a modern boat
+  at the end of the tick. A boat placed by a player faces the player's look direction.
+- Same yaw convention and float approach as b1.7.3 (1.7.10 water levels are in ninths, so the
+  hull depth is 0.385 again).
+- Sneak to dismount is vanilla 1.7.10 behaviour. A sneaking player can't board.
+- Networking uses a `SimpleNetworkWrapper` channel `boatqol`: `MoveMessage` (client to server)
+  and `ConfigMessage` (server to client on login). Moves are applied on the server thread. If the
+  rider's client sends no move for 60 ticks, the server steers the boat with the rider's
+  movement input itself.
+- The 105° look limit is applied to the mouse input before it turns the player (a replaced
+  `MouseHelper`), so the view stops at the limit instead of overshooting.
+
 ## 6. Out of scope
 
 - Paddle animations and sounds.

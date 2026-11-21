@@ -3,9 +3,15 @@ pluginManagement {
         maven { name = 'Fabric'; url = 'https://maven.fabricmc.net/' }
         maven { name = 'Babric'; url = 'https://maven.glass-launcher.net/babric' }
         maven { name = 'Signalum'; url = 'https://maven.thesignalumproject.net/infrastructure' }
+        maven { name = 'GTNH'; url = 'https://nexus.gtnewhorizons.com/repository/public/' }
         mavenCentral()
         gradlePluginPortal()
     }
+}
+
+plugins {
+    // Downloads the Java 8 runtime that Minecraft 1.7.10 needs, if it isn't installed.
+    id 'org.gradle.toolchains.foojay-resolver-convention' version '1.0.0'
 }
 
 rootProject.name = 'BoatQOL'
@@ -14,3 +20,4 @@ rootProject.name = 'BoatQOL'
 // own "Minecraft Client" / "Minecraft Server" run configurations.
 include 'b1.7.3'
 include 'bta'
+include 'forge-1.7.10'
