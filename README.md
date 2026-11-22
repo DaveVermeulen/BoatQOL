@@ -10,6 +10,8 @@ Targets, in build order:
 
 See [docs/SPEC.md](docs/SPEC.md) for the exact behavior every port follows.
 
+> **AI disclaimer:** most of this mod's code and documentation was written with the help of Claude, an AI assistant by Anthropic, and reviewed by the author. Please report anything that looks wrong as an issue.
+
 ## Installing
 
 Each port has its own release on the [Releases page](../../releases): `…-b1.7.3`, `…-bta8` and
